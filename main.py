@@ -1,20 +1,27 @@
 import sqlite3
-import deletar
 conn = sqlite3.connect('banco.db')
 cursor = conn.cursor()
+tipos = ['1 - municipal',
+         '2 - estadual',
+         '3 - particular'
+         ]
 
 cursor.execute("""
 CREATE TABLE IF NOT EXISTS admin(
             id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
-            inst TEXT NOT NULL,
-            senha TEXT NOT NULl
+            codigo_inep TEXT UNIQUE NOT NULL,
+            senha TEXT NOT NULL,
+            nome TEXT,
+            tipo TEXT,
+            cidade TEXT,
+            estado TEXT
                )
 """)
 
 cursor.execute("""
 CREATE TABLE IF NOT EXISTS usuarios(
                id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
-               email TEXT NOT NULL,
+               cpf TEXT UNIQUE NOT NULL,
                senha TEXT NOT NULL,
                nome TEXT,
                idade TEXT
@@ -33,11 +40,10 @@ CREATE TABLE IF NOT EXISTS livros(
 
 def usuario():
     nome = input("Nome: ")
-    email = input("EMAIL: ")
+    cpf = input("Digite CPF: ")
     senha = input("Senha: ")
-    cursor.execute("SELECT * FROM usuarios WHERE nome = ? AND email = ? AND senha = ?;",
-                   (nome, email, senha))
-    
+    cursor.execute("SELECT * FROM usuarios WHERE nome = ? AND cpf = ? AND senha = ?;",
+                   (nome, cpf, senha))
     validar_usuario = cursor.fetchone()
 
     if validar_usuario:
@@ -51,15 +57,15 @@ def usuario():
             print("Deu bão também")
 
 def administrador():
-    inst = input("Instituição: ")
+    codigo_inep = input("Digite o código INEP da instituição: ")
     senha = input("Senha: ")
-    cursor.execute("SELECT * FROM admin WHERE inst = ? AND senha = ?;",
-                   (inst, senha))
+    cursor.execute("SELECT * FROM admin WHERE codigo_inep = ? AND senha = ?;",
+                   (codigo_inep, senha))
     
     validar_adm = cursor.fetchone()
-
+    
     if validar_adm:
-        print(f"Bem vindo {inst}!")
+        print(f"Bem vindo {validar_adm[0]}!")
         print()
         print('1 - acompanhar item')
         print('2 - adicionar item')
